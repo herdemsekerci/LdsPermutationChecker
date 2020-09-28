@@ -35,8 +35,8 @@ namespace PermutationChecker
                 }
             }
 
-            // check permutations of 
-            bool result = CheckPermutations(Expressions[0], Expressions[1]);
+            // check condition
+            bool result = CheckForSharedPermutations(Expressions[0], Expressions[1]);
             prompt(result.ToString());
         }
 
@@ -45,20 +45,18 @@ namespace PermutationChecker
         /// </summary>
         /// <param name="expr1">Given exppression 1</param>
         /// <param name="expr2">Given expression 2</param>
-        /// <returns>True one of the permutations of any, contains one of the permutations of the other one.</returns>
-        public static bool CheckPermutations(string expr1, string expr2)
+        /// <returns>'True' for one of the permutations of any, contains one of the permutations of the other one.</returns>
+        public static bool CheckForSharedPermutations(string expr1, string expr2)
         {
-            // gets all permutations of expr1
-            List<string> allPermutationsOfExpr1 = Permutation.GetPer(expr1.ToCharArray(), expr2);
-
-            if (!Permutation.IsFound)
+            if (expr1.ToCharArray().All(a => expr2.Contains(a)) 
+                || expr2.ToCharArray().All(a=> expr1.Contains(a)))
             {
-                // one of the permutations of any, contains one of the permutations of the other one' 
-                // one of the expr1' permutations contains expr2, no need to query expr2's permutations
-                Permutation.GetPer(expr2.ToCharArray(), expr1);
+                // if one of the expressions contains all the chars in another, one of it's permutations must contain the another one
+                // so this is the condition that we search for
+                return true;
             }
-         
-            return Permutation.IsFound;
+
+            return false;
         }
 
         private static bool WordIsValid(string expr)
@@ -71,50 +69,6 @@ namespace PermutationChecker
             Console.WriteLine(txt);
         }
 
-        public class Permutation
-        {
-            // permutations
-            public static bool IsFound = false;
-            public static List<string> GetPer(char[] list, string evaluateKeyWord)
-            {
-                IsFound = false;
-                int x = list.Length - 1;
-                List<string> allPermutations = new List<string>();
-                GetPer(list, 0, x, evaluateKeyWord, allPermutations);
-                return allPermutations.Distinct().ToList();
-            }
-            private static void Swap(ref char a, ref char b)
-            {
-                if (a == b) return;
-
-                var temp = a;
-                a = b;
-                b = temp;
-            }
-
-            private static void GetPer(char[] list, int k, int m, string evaluateKeyWord, List<string> permutations)
-            {
-                if (IsFound)
-                    return;
-
-                if (k == m)
-                {
-                    if (new string(list).Contains(evaluateKeyWord))
-                    {
-                        IsFound = true;
-                    }
-                    //permutations.Add(new string(list));
-                }
-                else
-                    for (int i = k; i <= m; i++)
-                    {
-                        Swap(ref list[k], ref list[i]);
-                        GetPer(list, k + 1, m, evaluateKeyWord, permutations);
-                        Swap(ref list[k], ref list[i]);
-                    }
-            }
-
-        }
-
+   
     }
 }
